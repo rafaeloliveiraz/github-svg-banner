@@ -3,6 +3,21 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
+// Função para escapar caracteres especiais em XML/SVG
+const escapeXml = (unsafe) => {
+    if (!unsafe) return '';
+    return unsafe.replace(/[<>&'"]/g, (c) => {
+        switch (c) {
+            case '<': return '&lt;';
+            case '>': return '&gt;';
+            case '&': return '&amp;';
+            case '\'': return '&apos;';
+            case '"': return '&quot;';
+            default: return c;
+        }
+    });
+};
+
 const animations = {
     fade: `.banner-text { animation: fade 2s infinite alternate; }
            @keyframes fade { 0% { opacity: 0; } 100% { opacity: 1; } }`,
@@ -25,11 +40,18 @@ app.get('/:text', (req, res) => {
     const bgPath = path.join(__dirname, 'banners', bgFile);
     let svgContent;
     try {
+        if (!fs.existsSync(bgPath)) {
+            throw new Error(`Background file ${bgFile} not found`);
+        }
         svgContent = fs.readFileSync(bgPath, 'utf8');
+        // Valida se o SVG contém entidades XML não escapadas
+        svgContent = svgContent.replace(/&(?![a-zA-Z0-9#]+;)/g, '&amp;');
     } catch (error) {
-        // Fallback para um SVG padrão se o arquivo não existir
+        console.error(`Error loading background: ${error.message}`);
+        // Fallback para um SVG padrão
         svgContent = `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
             <rect width="100%" height="100%" fill="#1a1a1a"/>
+            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="24">Error: Background ${escapeXml(bgFile)} not found</text>
         </svg>`;
     }
 
@@ -41,8 +63,8 @@ app.get('/:text', (req, res) => {
     if (textParts.length > 0) {
         textParts.forEach((part, index) => {
             const [word, hexColor] = part.split('#');
-            const textColor = useGlobalColor ? color : (hexColor || 'white');
-            displayText += `<tspan fill="${textColor}">${word.replace(/_/g, ' ')}</tspan>`;
+            const textColor = useGlobalColor ? escapeXml(color) : (hexColor || 'white');
+            displayText += `<tspan fill="#${textColor}">${escapeXml(word.replace(/_/g, ' '))}</tspan>`;
             if (index < textParts.length - 1) displayText += ' ';
         });
     } else {
@@ -51,13 +73,13 @@ app.get('/:text', (req, res) => {
 
     // Processa a profissão (ex.: Freelancer-and-Motion-Design#F6F6F6)
     const [roleText, roleColor] = role.split('#');
-    const roleDisplay = roleText.replace(/-/g, ' ');
-    const roleFinalColor = useGlobalColor ? color : (roleColor || 'white');
+    const roleDisplay = escapeXml(roleText.replace(/-/g, ' '));
+    const roleFinalColor = useGlobalColor ? escapeXml(color) : (roleColor || 'white');
 
     // Processa o "AVAILABLE FOR HIRE" (ex.: hire=1#000)
     const [hireValue, hireColor] = hire.split('#');
     const showHire = hireValue === '1';
-    const hireFinalColor = useGlobalColor ? color : (hireColor || 'white');
+    const hireFinalColor = useGlobalColor ? escapeXml(color) : (hireColor || 'white');
 
     const animCss = animations[anim] || animations.fade;
 
@@ -83,8 +105,8 @@ app.get('/:text', (req, res) => {
             ${animCss}
         </style>
         <text x="50%" y="40%" dominant-baseline="middle" text-anchor="middle" class="banner-text">${displayText}</text>
-        <text x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" class="role-text" fill="${roleFinalColor}">${roleDisplay}</text>
-        ${showHire ? `<text x="50%" y="80%" dominant-baseline="middle" text-anchor="middle" class="hire-text" fill="${hireFinalColor}">AVAILABLE FOR HIRE</text>` : ''}
+        <text x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" class="role-text" fill="#${roleFinalColor}">${roleDisplay}</text>
+        ${showHire ? `<text x="50%" y="80%" dominant-baseline="middle" text-anchor="middle" class="hire-text" fill="#${hireFinalColor}">AVAILABLE FOR HIRE</text>` : ''}
     </svg>`);
 
     // Adiciona cache por 6 horas (21.600 segundos)
