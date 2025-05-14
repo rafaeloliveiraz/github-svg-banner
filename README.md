@@ -5,7 +5,7 @@ Generate animated SVG banners for your GitHub profile with a simple URL!
 ## How to Use
 Access a URL like:
 ```
-https://rafaeloliveiraz.github.io/github-svg-banner/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white
+https://github-svg-banner.vercel.app/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white
 ```
 - `nome_funcao`: Your name and role (e.g., `Joao-Oliveira_FullStack`).
 - `bg`: Background model (`wave`, `gradient`).
@@ -14,13 +14,13 @@ https://rafaeloliveiraz.github.io/github-svg-banner/Joao-Oliveira_FullStack?bg=w
 
 Add to your README:
 ```markdown
-![Banner](https://rafaeloliveiraz.github.io/github-svg-banner/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white)
+![Banner](https://github-svg-banner.vercel.app/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white)
 ```
 
 ## Example Banner
 Here’s an example using the `wave` background, `fade` animation, and `white` text color:
 
-![Example Banner](https://rafaeloliveiraz.github.io/github-svg-banner/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white)
+![Example Banner](https://github-svg-banner.vercel.app/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white)
 
 ## Variables Explained
 - **`nome_funcao`**: Defines the text displayed on the banner. Format: `Name-Role` (e.g., `Joao-Oliveira_FullStack` becomes "Joao Oliveira - FullStack"). Use `-` to separate words in the name, and `_` to separate name and role.
