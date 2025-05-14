@@ -2,11 +2,24 @@ const express = require('express');
 const app = express();
 
 const backgrounds = {
-    wave: `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#24292e"/>
-        <path d="M0 100 Q200 50 400 100 T800 100 V200 H0 Z" fill="#58a6ff" opacity="0.5"/>
+    'tech-gradient': `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="mainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#2a1a5e;stop-opacity:1"/>
+                <stop offset="50%" style="stop-color:#2a1a5e;stop-opacity:0.8"/>
+                <stop offset="100%" style="stop-color:#2a1a5e;stop-opacity:0"/>
+            </linearGradient>
+            <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#5e60ce;stop-opacity:0.3"/>
+                <stop offset="100%" style="stop-color:#4d4dff;stop-opacity:0"/>
+            </linearGradient>
+        </defs>
+        <rect width="800" height="200" fill="url(#mainGrad)" rx="20" ry="20"/>
+        <circle cx="150" cy="50" r="70" fill="url(#glowGrad)" opacity="0.4"/>
+        <circle cx="650" cy="150" r="50" fill="url(#glowGrad)" opacity="0.3"/>
+        <path d="M0 150 Q200 100 400 150 T800 150" fill="none" stroke="#5e60ce" stroke-width="5" opacity="0.2"/>
     </svg>`,
-    gradient: `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
+    'gradient': `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
         <defs>
             <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" style="stop-color:#24292e;stop-opacity:1"/>
