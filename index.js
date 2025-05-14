@@ -8,25 +8,28 @@ const escapeXml = (unsafe) => {
     if (!unsafe) return '';
     return unsafe.replace(/[<>&'"]/g, (c) => {
         switch (c) {
-            case '<': return '&lt;';
-            case '>': return '&gt;';
-            case '&': return '&amp;';
-            case '\'': return '&apos;';
-            case '"': return '&quot;';
+            case '<': return '<';
+            case '>': return '>';
+            case '&': return '&';
+            case '\'': return ''';
+            case '"': return '"';
             default: return c;
         }
     });
 };
 
-// Função para escapar Data URIs no SVG
+// Função para escapar todo o conteúdo do SVG, preservando as tags XML
 const escapeSvgContent = (svgContent) => {
-    // Escapa & dentro de Data URIs (ex.: data:image/png;base64,...)
-    return svgContent.replace(/(xlink:href="data:[^"]*")/g, (match) => {
-        // Extrai o conteúdo da Data URI
-        const dataUri = match.match(/data:[^"]*/)[0];
-        // Escapa caracteres especiais no conteúdo base64
-        const escapedDataUri = dataUri.replace(/&/g, '&amp;');
-        return match.replace(dataUri, escapedDataUri);
+    // Escapa & fora de entidades XML (ex.: &amp;) e dentro de atributos como xlink:href
+    return svgContent.replace(/(?<!&[a-zA-Z0-9#]+)(&)|\b(xlink:href="data:[^"]*")/g, (match, amp, href) => {
+        if (amp) return '&'; // Escapa & isolados
+        if (href) {
+            // Escapa & dentro de Data URIs
+            const dataUri = href.match(/data:[^"]*/)[0];
+            const escapedDataUri = dataUri.replace(/&/g, '&');
+            return href.replace(dataUri, escapedDataUri);
+        }
+        return match;
     });
 };
 
@@ -56,7 +59,7 @@ app.get('/:text', (req, res) => {
             throw new Error(`Background file ${bgFile} not found`);
         }
         svgContent = fs.readFileSync(bgPath, 'utf8');
-        // Escapa caracteres especiais no SVG, incluindo Data URIs
+        // Escapa caracteres especiais no SVG
         svgContent = escapeSvgContent(svgContent);
     } catch (error) {
         console.error(`Error loading background: ${error.message}`);
