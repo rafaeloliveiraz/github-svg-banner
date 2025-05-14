@@ -24,6 +24,12 @@ const animations = {
             @keyframes slide { 0% { transform: translateX(-20px); } 100% { transform: translateX(20px); } }`
 };
 
+// Redireciona para o repositório se a URL for acessada sem parâmetros
+app.get('/', (req, res) => {
+    res.redirect('https://github.com/rafaeloliveiraz/github-svg-banner');
+});
+
+// Gera o SVG para URLs com parâmetros
 app.get('/:text', (req, res) => {
     const { text } = req.params;
     const { bg = 'wave', anim = 'fade', color = 'white' } = req.query;
@@ -44,6 +50,8 @@ app.get('/:text', (req, res) => {
         <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="banner-text">${displayText}</text>
     </svg>`);
 
+    // Adiciona cache por 6 horas (21.600 segundos)
+    res.setHeader('Cache-Control', 'public, max-age=21600');
     res.setHeader('Content-Type', 'image/svg+xml');
     res.send(svg);
 });
