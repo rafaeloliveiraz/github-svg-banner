@@ -1,36 +1,41 @@
 # GitHub SVG Banner Generator
 
-Gere banners SVG animados para seu perfil GitHub com uma URL simples!
+Generate animated SVG banners for your GitHub profile with a simple URL!
 
-## Como Usar
-Acesse uma URL como:
+## How to Use
+Access a URL like:
 ```
-https://rafaeloliveiraz.github.io/nome_funcao?bg=wave&anim=fade&color=white
+https://rafaeloliveiraz.github.io/github-svg-banner/nome_funcao?bg=wave&anim=fade&color=white
 ```
-- `nome_funcao`: Seu nome e cargo (ex.: `Joao-Oliveira_FullStack`).
-- `bg`: Modelo de fundo (`wave`, `gradient`).
-- `anim`: Animação (`fade`, `slide`).
-- `color`: Cor do texto (`white`, `blue`, `#ffffff`).
+- `nome_funcao`: Your name and role (e.g., `Joao-Oliveira_FullStack`).
+- `bg`: Background model (`wave`, `gradient`).
+- `anim`: Animation (`fade`, `slide`).
+- `color`: Text color (`white`, `blue`, `#ffffff`).
 
-Adicione ao seu README:
+Add to your README:
 ```markdown
-![Banner](https://rafaeloliveiraz.github.io/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white)
+![Banner](https://rafaeloliveiraz.github.io/github-svg-banner/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white)
 ```
 
-## Exemplos
-- `https://rafaeloliveiraz.github.io/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white`
-- `https://rafaeloliveiraz.github.io/Maria-Silva_Frontend?bg=gradient&anim=slide&color=yellow`
+## Example Banner
+Here’s an example using the `wave` background, `fade` animation, and `white` text color:
 
-## Modelos Disponíveis
-- `wave`: Fundo com onda.
-- `gradient`: Fundo com gradiente.
+![Example Banner](https://rafaeloliveiraz.github.io/github-svg-banner/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white)
 
-## Animações Disponíveis
-- `fade`: Texto pisca.
-- `slide`: Texto desliza.
+## Variables Explained
+- **`nome_funcao`**: Defines the text displayed on the banner. Format: `Name-Role` (e.g., `Joao-Oliveira_FullStack` becomes "Joao Oliveira - FullStack"). Use `-` to separate words in the name, and `_` to separate name and role.
+- **`bg`**: Selects the background model. Available options: `wave`, `gradient`.
+- **`anim`**: Selects the animation for the text. Available options: `fade`, `slide`.
+- **`color`**: Sets the text color. Use color names (e.g., `white`, `blue`) or hex codes (e.g., `#ffffff`).
 
-## Contribuindo
-Abra issues ou pull requests para novos modelos ou animações!
+## Available Models
+Coming soon... (Table with background models)
 
-## Licença
+## Available Animations
+Coming soon... (Table with animations)
+
+## Contributing
+Feel free to open issues or pull requests for new models, animations, or improvements!
+
+## License
 MIT License
