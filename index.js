@@ -45,10 +45,10 @@ app.get('/', (req, res) => {
 // Gera o SVG para URLs com parâmetros
 app.get('/:text', (req, res) => {
     const { text } = req.params;
-    const { bg = 'wave', anim = 'fade', color = 'white' } = req.query;
+    const { bg = 'tech-gradient', anim = 'fade', color = 'white' } = req.query;
     const [name, role] = text.split('_');
-    const displayText = name && role ? `${name.replace('-', ' ')} '<br>' ${role.replace('-', ' ')}` : 'Nome - Função';
-    const svgContent = backgrounds[bg] || backgrounds.wave;
+    const displayText = name && role ? `${name.replace('-', ' ')} - ${role.replace('-', ' ')}` : 'Nome - Função';
+    const svgContent = backgrounds[bg] || backgrounds['tech-gradient'];
     const animCss = animations[anim] || animations.fade;
 
     const svg = svgContent.replace('</svg>', `
