@@ -21,14 +21,17 @@ const animations = {
             @keyframes slide { 0% { transform: translateX(-20px); } 100% { transform: translateX(20px); } }`
 };
 
+// Extrai o caminho da URL
+const pathParts = window.location.pathname.split('/').filter(part => part);
+const repoName = 'github-svg-banner';
+const textParam = pathParts.length > 1 && pathParts[0] === repoName ? pathParts[1] : 'Nome_Funcao';
+const [name, role] = textParam.split('_');
 const urlParams = new URLSearchParams(window.location.search);
-const path = window.location.pathname.split('/').pop() || 'Nome_Funcao';
-const [name, role] = path.split('_');
 const bg = urlParams.get('bg') || 'wave';
 const anim = urlParams.get('anim') || 'fade';
 const color = urlParams.get('color') || 'white';
 
-const text = name && role ? `${name} - ${role}` : 'Nome - Função';
+const text = name && role ? `${name.replace('-', ' ')} - ${role}` : 'Nome - Função';
 const svgContent = backgrounds[bg] || backgrounds.wave;
 const animCss = animations[anim] || animations.fade;
 
