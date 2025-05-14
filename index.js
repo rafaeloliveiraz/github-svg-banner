@@ -1,21 +1,67 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 const app = express();
 
-// Função para escapar caracteres especiais em XML/SVG
-const escapeXml = (unsafe) => {
-    if (!unsafe) return '';
-    return unsafe.replace(/[<>&'"]/g, (c) => {
-        switch (c) {
-            case '<': return '<';
-            case '>': return '>';
-            case '&': return '&';
-            case '\'': return '\'';
-            case '"': return '"';
-            default: return c;
-        }
-    });
+const backgrounds = {
+    '1': `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#1a1a1a"/>
+        <path d="M0 100 Q200 50 400 100 T800 100 V200 H0 Z" fill="#ff6f61" opacity="0.5"/>
+    </svg>`,
+    '2': `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#2a2a72;stop-opacity:1"/>
+                <stop offset="100%" style="stop-color:#009ffd;stop-opacity:1"/>
+            </linearGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grad2)"/>
+    </svg>`,
+    '3': `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#0d1b2a"/>
+        <circle cx="100" cy="50" r="20" fill="#ffba08" opacity="0.3"/>
+        <circle cx="200" cy="150" r="30" fill="#ffba08" opacity="0.3"/>
+        <circle cx="600" cy="100" r="25" fill="#ffba08" opacity="0.3"/>
+    </svg>`,
+    '4': `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#2d3436"/>
+        <path d="M0 0 L800 200 M800 0 L0 200" stroke="#00d4b6" stroke-width="10" opacity="0.5"/>
+    </svg>`,
+    '5': `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="grad5" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#ff9f43;stop-opacity:1"/>
+                <stop offset="100%" style="stop-color:#feca57;stop-opacity:1"/>
+            </linearGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grad5)"/>
+        <circle cx="400" cy="100" r="50" fill="#fff" opacity="0.1"/>
+    </svg>`,
+    '6': `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#1b263b"/>
+        <path d="M0 50 H800 M0 150 H800" stroke="#778da9" stroke-width="10" opacity="0.4"/>
+    </svg>`,
+    '7': `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#3c2f2f"/>
+        <path d="M0 200 Q400 0 800 200" fill="none" stroke="#ffcb69" stroke-width="20" opacity="0.5"/>
+    </svg>`,
+    '8': `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <radialGradient id="grad8" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" style="stop-color:#6a0572;stop-opacity:1"/>
+                <stop offset="100%" style="stop-color:#ab83a1;stop-opacity:1"/>
+            </radialGradient>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grad8)"/>
+    </svg>`,
+    '9': `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#0b132b"/>
+        <polygon points="400,50 350,150 450,150" fill="#5bc0eb" opacity="0.5"/>
+        <polygon points="300,30 250,130 350,130" fill="#5bc0eb" opacity="0.3"/>
+    </svg>`,
+    '10': `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#14213d"/>
+        <circle cx="400" cy="100" r="80" fill="none" stroke="#fca311" stroke-width="10" opacity="0.5"/>
+        <circle cx="400" cy="100" r="60" fill="none" stroke="#fca311" stroke-width="5" opacity="0.3"/>
+    </svg>`
 };
 
 const animations = {
@@ -33,79 +79,22 @@ app.get('/', (req, res) => {
 // Gera o SVG para URLs com parâmetros
 app.get('/:text', (req, res) => {
     const { text } = req.params;
-    const { role = 'Profession-Not-Set#ffffff', bg = '1', anim = 'fade', color, hire = '0' } = req.query;
-
-    // Valida e carrega o background SVG da pasta banners/
-    const bgFile = `${bg}.svg`;
-    const bgPath = path.join(__dirname, 'banners', bgFile);
-    let svgContent;
-    try {
-        console.log(`Attempting to load SVG from: ${bgPath}`);
-        if (!fs.existsSync(bgPath)) {
-            throw new Error(`Background file ${bgFile} not found`);
-        }
-        svgContent = fs.readFileSync(bgPath, 'utf8');
-    } catch (error) {
-        console.error(`Error loading background: ${error.message}`);
-        // Fallback para um SVG padrão
-        svgContent = `<svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
-            <rect width="100%" height="100%" fill="#1a1a1a"/>
-            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="24">Error: Background ${escapeXml(bgFile)} not found</text>
-        </svg>`;
-    }
-
-    // Processa o texto principal (ex.: I'm#000-Firstname#FFF-Lastname#000)
-    const textParts = text.split('-');
-    let displayText = '';
-    let useGlobalColor = color !== undefined;
-
-    if (textParts.length > 0) {
-        textParts.forEach((part, index) => {
-            const [word, hexColor] = part.split('#');
-            const textColor = useGlobalColor ? escapeXml(color) : (hexColor || 'white');
-            displayText += `<tspan fill="#${textColor}">${escapeXml(word.replace(/_/g, ' '))}</tspan>`;
-            if (index < textParts.length - 1) displayText += ' ';
-        });
-    } else {
-        displayText = `<tspan fill="${color || 'white'}">Nome - Função</tspan>`;
-    }
-
-    // Processa a profissão (ex.: Freelancer-and-Motion-Design#F6F6F6)
-    const [roleText, roleColor] = role.split('#');
-    const roleDisplay = escapeXml(roleText.replace(/-/g, ' '));
-    const roleFinalColor = useGlobalColor ? escapeXml(color) : (roleColor || 'white');
-
-    // Processa o "AVAILABLE FOR HIRE" (ex.: hire=1#000)
-    const [hireValue, hireColor] = hire.split('#');
-    const showHire = hireValue === '1';
-    const hireFinalColor = useGlobalColor ? escapeXml(color) : (hireColor || 'white');
-
+    const { bg = '1', anim = 'fade', color = 'white' } = req.query;
+    const [name, role] = text.split('_');
+    const displayText = name && role ? `${name.replace('-', ' ')} - ${role.replace('-', ' ')}` : 'Nome - Função';
+    const svgContent = backgrounds[bg] || backgrounds['1'];
     const animCss = animations[anim] || animations.fade;
 
     const svg = svgContent.replace('</svg>', `
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
             .banner-text {
-                font-family: 'Roboto', sans-serif;
+                font-family: Arial, sans-serif;
                 font-size: 36px;
-                font-weight: 700;
-            }
-            .role-text {
-                font-family: 'Roboto', sans-serif;
-                font-size: 24px;
-                font-weight: 400;
-            }
-            .hire-text {
-                font-family: 'Roboto', sans-serif;
-                font-size: 18px;
-                font-weight: 400;
-                text-transform: uppercase;
+                fill: ${color};
             }
             ${animCss}
         </style>
-        <text x="50%" y="40%" dominant-baseline="middle" text-anchor="middle" class="banner-text">${displayText}</text>
-        <text x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" class="role-text" fill="#${roleFinalColor}">${roleDisplay}</text>
-        ${showHire ? `<text x="50%" y="80%" dominant-baseline="middle" text-anchor="middle" class="hire-text" fill="#${hireFinalColor}">AVAILABLE FOR HIRE</text>` : ''}
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="banner-text">${displayText}</text>
     </svg>`);
 
     // Adiciona cache por 6 horas (21.600 segundos)
