@@ -11,7 +11,7 @@ const escapeXml = (unsafe) => {
             case '<': return '<';
             case '>': return '>';
             case '&': return '&';
-            case '\'': return ''';
+            case '\'': return '\'';
             case '"': return '"';
             default: return c;
         }
@@ -40,6 +40,7 @@ app.get('/:text', (req, res) => {
     const bgPath = path.join(__dirname, 'banners', bgFile);
     let svgContent;
     try {
+        console.log(`Attempting to load SVG from: ${bgPath}`);
         if (!fs.existsSync(bgPath)) {
             throw new Error(`Background file ${bgFile} not found`);
         }
