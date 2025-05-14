@@ -18,8 +18,8 @@ Adicione ao seu README:
 ```
 
 ## Exemplos
-- `https://seu-usuario.github.io/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white`
-- `https://seu-usuario.github.io/Maria-Silva_Frontend?bg=gradient&anim=slide&color=yellow`
+- `https://rafaeloliveiraz.github.io/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white`
+- `https://rafaeloliveiraz.github.io/Maria-Silva_Frontend?bg=gradient&anim=slide&color=yellow`
 
 ## Modelos Disponíveis
 - `wave`: Fundo com onda.
