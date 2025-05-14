@@ -1,0 +1,7 @@
+.banner-text {
+    animation: fade 2s infinite alternate;
+}
+@keyframes fade {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
