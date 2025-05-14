@@ -5,7 +5,7 @@ Gere banners SVG animados para seu perfil GitHub com uma URL simples!
 ## Como Usar
 Acesse uma URL como:
 ```
-https://seu-usuario.github.io/nome_funcao?bg=wave&anim=fade&color=white
+https://rafaeloliveiraz.github.io/nome_funcao?bg=wave&anim=fade&color=white
 ```
 - `nome_funcao`: Seu nome e cargo (ex.: `Joao-Oliveira_FullStack`).
 - `bg`: Modelo de fundo (`wave`, `gradient`).
@@ -14,7 +14,7 @@ https://seu-usuario.github.io/nome_funcao?bg=wave&anim=fade&color=white
 
 Adicione ao seu README:
 ```markdown
-![Banner](https://seu-usuario.github.io/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white)
+![Banner](https://rafaeloliveiraz.github.io/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white)
 ```
 
 ## Exemplos
