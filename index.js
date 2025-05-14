@@ -18,21 +18,6 @@ const escapeXml = (unsafe) => {
     });
 };
 
-// Função para escapar todo o conteúdo do SVG, preservando as tags XML
-const escapeSvgContent = (svgContent) => {
-    // Escapa & fora de entidades XML (ex.: &amp;) e dentro de atributos como xlink:href
-    return svgContent.replace(/(?<!&[a-zA-Z0-9#]+)(&)|\b(xlink:href="data:[^"]*")/g, (match, amp, href) => {
-        if (amp) return '&'; // Escapa & isolados
-        if (href) {
-            // Escapa & dentro de Data URIs
-            const dataUri = href.match(/data:[^"]*/)[0];
-            const escapedDataUri = dataUri.replace(/&/g, '&');
-            return href.replace(dataUri, escapedDataUri);
-        }
-        return match;
-    });
-};
-
 const animations = {
     fade: `.banner-text { animation: fade 2s infinite alternate; }
            @keyframes fade { 0% { opacity: 0; } 100% { opacity: 1; } }`,
@@ -59,8 +44,6 @@ app.get('/:text', (req, res) => {
             throw new Error(`Background file ${bgFile} not found`);
         }
         svgContent = fs.readFileSync(bgPath, 'utf8');
-        // Escapa caracteres especiais no SVG
-        svgContent = escapeSvgContent(svgContent);
     } catch (error) {
         console.error(`Error loading background: ${error.message}`);
         // Fallback para um SVG padrão
