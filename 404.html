@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting...</title>
+</head>
+<body>
+    <script>
+        const path = window.location.pathname.slice(1);
+        if (path) {
+            window.location = `/?text=${path}${window.location.search}`;
+        } else {
+            document.write('URL inválida. Use: /nome_funcao?bg=wave&anim=fade');
+        }
+    </script>
+</body>
+</html>
