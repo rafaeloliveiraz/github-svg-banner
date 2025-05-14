@@ -2,20 +2,9 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Redirecting...</title>
+    <title>GitHub SVG Banner Generator</title>
 </head>
 <body>
-    <script>
-        const pathParts = window.location.pathname.split('/').filter(part => part);
-        const repoName = 'github-svg-banner';
-        if (pathParts.length > 0 && pathParts[0] === repoName && pathParts[1]) {
-            // Mantém a estrutura /github-svg-banner/nome_funcao
-            window.location = `/github-svg-banner/${pathParts[1]}${window.location.search}`;
-        } else if (pathParts.length > 0) {
-            window.location = `/github-svg-banner/${pathParts[0]}${window.location.search}`;
-        } else {
-            document.write('URL inválida. Use: /github-svg-banner/nome_funcao?bg=wave&anim=fade');
-        }
-    </script>
+    <script src="/github-svg-banner/index.js"></script>
 </body>
 </html>
