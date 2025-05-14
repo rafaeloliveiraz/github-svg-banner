@@ -1,0 +1,7 @@
+.banner-text {
+    animation: slide 2s infinite alternate;
+}
+@keyframes slide {
+    0% { transform: translateX(-20px); }
+    100% { transform: translateX(20px); }
+}
