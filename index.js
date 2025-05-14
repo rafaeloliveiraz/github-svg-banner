@@ -47,7 +47,7 @@ app.get('/:text', (req, res) => {
     const { text } = req.params;
     const { bg = 'wave', anim = 'fade', color = 'white' } = req.query;
     const [name, role] = text.split('_');
-    const displayText = name && role ? `${name.replace('-', ' ')} - ${role.replace('-', ' ')}` : 'Nome - Função';
+    const displayText = name && role ? `${name.replace('-', ' ')} '<br>' ${role.replace('-', ' ')}` : 'Nome - Função';
     const svgContent = backgrounds[bg] || backgrounds.wave;
     const animCss = animations[anim] || animations.fade;
 
