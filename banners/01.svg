@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 800 200">
+  <!-- Generator: Adobe Illustrator 29.2.1, SVG Export Plug-In . SVG Version: 2.1.0 Build 116)  -->
+  <defs>
+    <style>
+      .st0, .st1 {
+        fill: none;
+      }
+
+      .st2 {
+        fill: url(#linear-gradient1);
+      }
+
+      .st3 {
+        fill: url(#linear-gradient);
+      }
+
+      .st4 {
+        isolation: isolate;
+      }
+
+      .st1 {
+        stroke: #fff;
+        stroke-dasharray: 5 5;
+        stroke-opacity: .04;
+      }
+
+      .st5 {
+        clip-path: url(#clippath);
+      }
+    </style>
+    <clipPath id="clippath">
+      <path class="st0" d="M0,22.22C0,9.95,12.79,0,28.57,0h742.86c15.78,0,28.57,9.95,28.57,22.22v177.78H0V22.22Z"/>
+    </clipPath>
+    <linearGradient id="linear-gradient" x1="400" y1="1718" x2="400" y2="1918" gradientTransform="translate(0 -1718)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#0f172a" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient1" x1="400" y1="1718" x2="400" y2="1918" gradientTransform="translate(0 -1718)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#000"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <g class="st4">
+    <g id="Model-01">
+      <g class="st5">
+        <g>
+          <rect class="st3" width="800" height="200"/>
+          <path class="st1" d="M29.02,0v200M57.59,0v200M86.16,0v200M114.73,0v200M143.3,0v200M171.88,0v200M200.45,0v200M229.02,0v200M257.59,0v200M286.16,0v200M314.73,0v200M343.3,0v200M371.88,0v200M400.45,0v200M429.02,0v200M457.59,0v200M486.16,0v200M514.73,0v200M543.3,0v200M571.88,0v200M600.45,0v200M629.02,0v200M657.59,0v200M686.16,0v200M714.73,0v200M743.3,0v200M771.88,0v200M0,21.88h800M0,44.1h800M0,66.32h800M0,88.54h800M0,110.76h800M0,132.99h800M0,155.21h800M0,177.43h800"/>
+          <rect class="st2" width="800" height="200"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
