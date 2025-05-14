@@ -18,9 +18,9 @@ Add to your README:
 ```
 
 ## Example Banner
-Due to GitHub rendering limitations, the dynamic SVG may not display directly here. Click the link below to view the banner, then use the URL in your README:
+Here’s an example using the `wave` background, `fade` animation, and `white` text color:
 
-[View Example Banner](https://rafaeloliveiraz.github.io/github-svg-banner/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white)
+![Example Banner](https://rafaeloliveiraz.github.io/github-svg-banner/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white)
 
 ## Variables Explained
 - **`nome_funcao`**: Defines the text displayed on the banner. Format: `Name-Role` (e.g., `Joao-Oliveira_FullStack` becomes "Joao Oliveira - FullStack"). Use `-` to separate words in the name, and `_` to separate name and role.
