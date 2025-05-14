@@ -23,8 +23,7 @@ const animations = {
 
 // Extrai o caminho da URL
 const pathParts = window.location.pathname.split('/').filter(part => part);
-const repoName = 'github-svg-banner';
-const textParam = pathParts.length > 1 && pathParts[0] === repoName ? pathParts[1] : 'Nome_Funcao';
+const textParam = pathParts.length > 1 ? pathParts[pathParts.length - 1] : (new URLSearchParams(window.location.search).get('text') || 'Nome_Funcao');
 const [name, role] = textParam.split('_');
 const urlParams = new URLSearchParams(window.location.search);
 const bg = urlParams.get('bg') || 'wave';
@@ -35,6 +34,7 @@ const text = name && role ? `${name.replace('-', ' ')} - ${role}` : 'Nome - Fun√
 const svgContent = backgrounds[bg] || backgrounds.wave;
 const animCss = animations[anim] || animations.fade;
 
+// Gera o SVG
 const svg = svgContent.replace('</svg>', `
     <style>
         .banner-text {
@@ -47,4 +47,6 @@ const svg = svgContent.replace('</svg>', `
     <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" class="banner-text">${text}</text>
 </svg>`);
 
+// Define o tipo de conte√∫do e exibe o SVG
+document.contentType = 'image/svg+xml';
 document.write(svg);
