@@ -1,35 +1,15 @@
 const express = require('express');
 const app = express();
 
-const FONT_FAMILY = "'Poppins', 'Montserrat', Arial, sans-serif";
+const FONT_FAMILY = "'Roboto', Arial, sans-serif";
 
 const animations = {
     neon: (color) => `
         .banner-text-main {
-            text-shadow:
-                0 0 8px ${color},
-                0 0 16px ${color},
-                0 0 32px ${color},
-                0 0 48px ${color};
-            position: relative;
-        }
-        .banner-text-main::after {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 80%;
-            height: 60%;
-            border-radius: 50%;
-            box-shadow: 0 0 60px 20px ${color};
-            opacity: 0.5;
-            transform: translate(-50%, -50%) rotate(0deg);
-            animation: neon-glow-move 6s linear infinite;
-            pointer-events: none;
-        }
-        @keyframes neon-glow-move {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+            fill: url(#neon-gradient);
+            filter: drop-shadow(0 0 6px ${color}) drop-shadow(0 0 16px ${color});
+            font-weight: 900;
+            letter-spacing: 2px;
         }
     `,
     borders: (color) => `
@@ -71,6 +51,23 @@ const animations = {
             0%, 80%, 100% { opacity: 0; }
             20%, 60% { opacity: 1; }
         }
+    `,
+    typing: () => `
+        .banner-text-main {
+            font-family: ${FONT_FAMILY};
+            font-size: 54px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+        .typing-cursor {
+            font-size: 54px;
+            font-weight: 900;
+            animation: blink 1s steps(1) infinite;
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
     `
 };
 
@@ -89,12 +86,13 @@ function parseBg(bg) {
 
 function parseTag(tag) {
     // tag=left-000-FFF
-    if (!tag) return { align: 'middle', color: '#fff', bg: '#000' };
-    const [align, color, bgColor] = tag.split('-');
+    if (!tag) return { align: 'middle', color: '#fff', bg: '#000', radius: 2 };
+    const [align, color, bgColor, radius] = tag.split('-');
     return {
         align: align === 'left' ? 'start' : align === 'right' ? 'end' : 'middle',
         color: color ? `#${color}` : '#fff',
-        bg: bgColor ? `#${bgColor}` : '#000'
+        bg: bgColor ? `#${bgColor}` : '#000',
+        radius: radius ? Number(radius) : 2
     };
 }
 
@@ -115,39 +113,45 @@ app.get('/:text', (req, res) => {
 
     // Animação customizada
     let animCss = '';
+    let mainTextSvg = '';
+    let extraDefs = '';
     if (anim.startsWith('neon-')) {
         const neonColor = `#${anim.split('-')[1] || 'fff'}`;
         animCss = animations.neon(neonColor);
+        extraDefs = `<linearGradient id="neon-gradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="10%" stop-color="#fff"/><stop offset="100%" stop-color="${neonColor}"/></linearGradient>`;
+        mainTextSvg = `<text x="50%" y="48%" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${mainText}</text>`;
+    } else if (anim === 'typing') {
+        animCss = animations.typing();
+        mainTextSvg = `<text x="50%" y="48%" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};">${mainText}<tspan class="typing-cursor">|</tspan></text>`;
     } else if (anim.startsWith('borders-')) {
         const borderColor = `#${anim.split('-')[1] || 'fff'}`;
         animCss = animations.borders(borderColor);
+        mainTextSvg = `<text x="50%" y="48%" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${mainText}</text>`;
     } else {
         animCss = animations.fade();
+        mainTextSvg = `<text x="50%" y="48%" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${[...mainText].map((l, i) => `<tspan>${l === ' ' ? '\u00A0' : l}</tspan>`).join('')}</text>`;
     }
 
     // Gradiente ou sólido (de cima para baixo)
     let bgSvg = '';
     if (bgData.type === 'gradient') {
-        bgSvg = `<defs><linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:${bgData.colors[0]};stop-opacity:1"/><stop offset="100%" style="stop-color:${bgData.colors[1]};stop-opacity:1"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#grad)" rx="${borderRadius}" ry="${borderRadius}"/>`;
+        bgSvg = `<defs>${extraDefs}<linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:${bgData.colors[0]};stop-opacity:1"/><stop offset="100%" style="stop-color:${bgData.colors[1]};stop-opacity:1"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#grad)" rx="${borderRadius}" ry="${borderRadius}"/>`;
     } else {
-        bgSvg = `<rect width="100%" height="100%" fill="${bgData.colors[0]}" rx="${borderRadius}" ry="${borderRadius}"/>`;
+        bgSvg = `<defs>${extraDefs}</defs><rect width="100%" height="100%" fill="${bgData.colors[0]}" rx="${borderRadius}" ry="${borderRadius}"/>`;
     }
 
-    // Texto principal com fade letra a letra
-    let mainTextSvg = '';
-    if (anim === 'fade') {
-        mainTextSvg = `<text x="50%" y="48%" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};">${[...mainText].map((l, i) => `<tspan>${l === ' ' ? '\u00A0' : l}</tspan>`).join('')}</text>`;
-    } else {
-        mainTextSvg = `<text x="50%" y="48%" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};">${mainText}</text>`;
-    }
-
-    // Tagline com retângulo sólido atrás
+    // Tagline com retângulo sólido atrás, fonte fina, menor, radius customizável
     let taglineSvg = '';
     if (taglineText) {
+        // Medida aproximada do texto (SVG não tem auto width)
+        const tagWidth = Math.max(60, taglineText.length * 13);
+        let tagX = 400; // centro
+        if (tagData.align === 'start') tagX = 40 + tagWidth / 2;
+        if (tagData.align === 'end') tagX = 800 - 40 - tagWidth / 2;
         taglineSvg = `
         <g>
-            <rect x="50%" y="70%" width="${taglineText.length * 14}" height="32" rx="8" ry="8" fill="${tagData.bg}" transform="translate(-${(taglineText.length * 14) / 2},-16)" />
-            <text x="50%" y="70%" dominant-baseline="middle" text-anchor="${tagData.align}" class="banner-tagline" style="fill:${tagData.color};font-size:22px;font-family:${FONT_FAMILY};font-weight:700;">
+            <rect x="${tagX - tagWidth / 2}" y="154" width="${tagWidth}" height="28" rx="${tagData.radius}" ry="${tagData.radius}" fill="${tagData.bg}" />
+            <text x="${tagX}" y="170" dominant-baseline="middle" text-anchor="${tagData.align}" class="banner-tagline" style="fill:${tagData.color};font-size:18px;font-family:${FONT_FAMILY};font-weight:300;letter-spacing:1px;">
                 ${taglineText}
             </text>
         </g>
@@ -160,14 +164,14 @@ app.get('/:text', (req, res) => {
         <style>
             .banner-text-main {
                 font-family: ${FONT_FAMILY};
-                font-size: 38px;
-                font-weight: 800;
+                font-size: 54px;
+                font-weight: 900;
                 fill: ${textColor};
                 dominant-baseline: middle;
                 text-anchor: middle;
             }
             .banner-tagline {
-                font-weight: 700;
+                font-weight: 300;
             }
             ${animCss}
         </style>
