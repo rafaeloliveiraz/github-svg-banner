@@ -190,10 +190,10 @@ app.get('/:text', (req, res) => {
         const leftX = mainTextX - mainTextWidth / 2;
         const rightX = mainTextX + mainTextWidth / 2;
         techBgSvg = `<g>
-            <line x1="0" y1="60" x2="800" y2="60" stroke="#e5e7eb" stroke-width="2" opacity="0.5" />
-            <line x1="0" y1="110" x2="800" y2="110" stroke="#e5e7eb" stroke-width="2" opacity="0.5" />
-            <line x1="${leftX}" y1="40" x2="${leftX}" y2="160" stroke="#e5e7eb" stroke-width="2" opacity="0.5" />
-            <line x1="${rightX}" y1="40" x2="${rightX}" y2="160" stroke="#e5e7eb" stroke-width="2" opacity="0.5" />
+            <line x1="0" y1="60" x2="800" y2="60" stroke="#e5e7eb" stroke-width="1" opacity="0.5" stroke-dasharray="4 2" />
+            <line x1="0" y1="110" x2="800" y2="110" stroke="#e5e7eb" stroke-width="1" opacity="0.5" stroke-dasharray="4 2" />
+            <line x1="${leftX}" y1="40" x2="${leftX}" y2="160" stroke="#e5e7eb" stroke-width="1" opacity="0.5" stroke-dasharray="4 2" />
+            <line x1="${rightX}" y1="40" x2="${rightX}" y2="160" stroke="#e5e7eb" stroke-width="1" opacity="0.5" stroke-dasharray="4 2" />
         </g>`;
     }
     if (bgData.type === 'gradient') {
