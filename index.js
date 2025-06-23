@@ -18,33 +18,25 @@ const animations = {
             fill: url(#border-gradient);
             filter: drop-shadow(0 0 12px #fb0094) drop-shadow(0 0 24px #00ff00);
         }
-        @keyframes border-gradient-move {
-            0% { stop-color: #fb0094; }
-            20% { stop-color: #0000ff; }
-            40% { stop-color: #00ff00; }
-            60% { stop-color: #ffff00; }
-            80% { stop-color: #ff0000; }
-            100% { stop-color: #fb0094; }
-        }
     `,
     fade: () => `
         .banner-text-main tspan {
             opacity: 0;
-            animation: fade-in 2.5s infinite;
+            animation: fade-in 3.5s infinite;
         }
         .banner-text-main tspan:nth-child(1) { animation-delay: 0s; }
-        .banner-text-main tspan:nth-child(2) { animation-delay: 0.15s; }
-        .banner-text-main tspan:nth-child(3) { animation-delay: 0.3s; }
-        .banner-text-main tspan:nth-child(4) { animation-delay: 0.45s; }
-        .banner-text-main tspan:nth-child(5) { animation-delay: 0.6s; }
-        .banner-text-main tspan:nth-child(6) { animation-delay: 0.75s; }
-        .banner-text-main tspan:nth-child(7) { animation-delay: 0.9s; }
-        .banner-text-main tspan:nth-child(8) { animation-delay: 1.05s; }
-        .banner-text-main tspan:nth-child(9) { animation-delay: 1.2s; }
-        .banner-text-main tspan:nth-child(10) { animation-delay: 1.35s; }
+        .banner-text-main tspan:nth-child(2) { animation-delay: 0.25s; }
+        .banner-text-main tspan:nth-child(3) { animation-delay: 0.5s; }
+        .banner-text-main tspan:nth-child(4) { animation-delay: 0.75s; }
+        .banner-text-main tspan:nth-child(5) { animation-delay: 1s; }
+        .banner-text-main tspan:nth-child(6) { animation-delay: 1.25s; }
+        .banner-text-main tspan:nth-child(7) { animation-delay: 1.5s; }
+        .banner-text-main tspan:nth-child(8) { animation-delay: 1.75s; }
+        .banner-text-main tspan:nth-child(9) { animation-delay: 2s; }
+        .banner-text-main tspan:nth-child(10) { animation-delay: 2.25s; }
         @keyframes fade-in {
-            0%, 80%, 100% { opacity: 0; }
-            20%, 60% { opacity: 1; }
+            0%, 90%, 100% { opacity: 0; }
+            10%, 80% { opacity: 1; }
         }
     `,
     typing: () => `
@@ -57,11 +49,16 @@ const animations = {
         .typing-cursor {
             font-size: 54px;
             font-weight: 900;
-            animation: blink 1.1s steps(1) infinite;
+            animation: blink 0.4s steps(1) infinite;
         }
         @keyframes blink {
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0; }
+        }
+    `,
+    grainy: () => `
+        .banner-text-main {
+            filter: url(#grainy-filter);
         }
     `
 };
@@ -79,18 +76,26 @@ function parseBg(bg) {
     return { type: 'gradient', colors: ['#2a1a5e', '#58a6ff'] };
 }
 
-function parseTag(tag, mainTextX, mainTextWidth) {
-    if (!tag) return { align: 'middle', color: '#fff', bg: '#000', radius: 2, x: mainTextX };
+function parseTag(tag, mainTextX, mainTextWidth, alignType = 'middle') {
+    if (!tag) return { align: 'middle', color: '#fff', bg: '#000', radius: 2, x: mainTextX, anchor: 'middle' };
     const [align, color, bgColor, radius] = tag.split('-');
     let x = mainTextX;
-    if (align === 'left') x = mainTextX - mainTextWidth / 2 + 2;
-    if (align === 'end' || align === 'right') x = mainTextX + mainTextWidth / 2 - 2;
+    let anchor = 'middle';
+    if (align === 'left') {
+        x = mainTextX - mainTextWidth / 2;
+        anchor = 'start';
+    }
+    if (align === 'end' || align === 'right') {
+        x = mainTextX + mainTextWidth / 2;
+        anchor = 'end';
+    }
     return {
         align: align === 'left' ? 'start' : align === 'right' ? 'end' : 'middle',
         color: color ? `#${color}` : '#fff',
         bg: bgColor ? `#${bgColor}` : '#000',
         radius: radius ? Number(radius) : 2,
-        x
+        x,
+        anchor
     };
 }
 
@@ -126,32 +131,22 @@ app.get('/:text', (req, res) => {
         mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${mainText}</text>`;
     } else if (anim === 'typing') {
         animCss = animations.typing();
-        const typingSpans = [...mainText].map((l, i) => `<tspan class="typing-span" style="animation-delay:${i * 0.25}s">${l === ' ' ? '\u00A0' : l}</tspan>`).join('');
-        mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};">${typingSpans}<tspan class="typing-cursor">|</tspan></text>`;
+        // Typing: cursor acompanha a escrita
+        const typingSpans = [...mainText].map((l, i) => `<tspan class="typing-span" style="animation-delay:${i * 0.12}s">${l === ' ' ? '\u00A0' : l}</tspan>`).join('');
+        mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};">${typingSpans}<tspan class="typing-cursor" id="cursor">|</tspan></text>`;
         animCss += `
         .typing-span {
-            opacity: 0;
-            animation: typing-appear 0.22s forwards;
+            opacity: 1;
         }
-        .typing-span:nth-child(1) { animation-delay: 0s; }
-        .typing-span:nth-child(2) { animation-delay: 0.25s; }
-        .typing-span:nth-child(3) { animation-delay: 0.5s; }
-        .typing-span:nth-child(4) { animation-delay: 0.75s; }
-        .typing-span:nth-child(5) { animation-delay: 1s; }
-        .typing-span:nth-child(6) { animation-delay: 1.25s; }
-        .typing-span:nth-child(7) { animation-delay: 1.5s; }
-        .typing-span:nth-child(8) { animation-delay: 1.75s; }
-        .typing-span:nth-child(9) { animation-delay: 2s; }
-        .typing-span:nth-child(10) { animation-delay: 2.25s; }
+        .typing-span {
+            animation: typing-appear 0.01s steps(1) forwards;
+        }
+        .typing-span { transition: none; }
+        .typing-cursor {
+            animation: blink 0.4s steps(1) infinite;
+        }
         @keyframes typing-appear {
             to { opacity: 1; }
-        }
-        .typing-cursor {
-            animation: blink 1.1s steps(1) infinite, typing-cursor-move 3.5s steps(1) infinite;
-        }
-        @keyframes typing-cursor-move {
-            0%, 90% { opacity: 1; }
-            91%, 100% { opacity: 0; }
         }
         `;
     } else if (anim === 'borders') {
@@ -177,6 +172,10 @@ app.get('/:text', (req, res) => {
             </stop>
         </linearGradient>`;
         mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${mainText}</text>`;
+    } else if (anim === 'grainy') {
+        animCss = animations.grainy();
+        extraDefs = `<filter id="grainy-filter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" result="turb"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.25"/></feComponentTransfer><feComposite operator="in" in2="SourceGraphic"/><feBlend in2="SourceGraphic" mode="multiply"/></filter>`;
+        mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${mainText}</text>`;
     } else {
         animCss = animations.fade();
         mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${[...mainText].map((l, i) => `<tspan>${l === ' ' ? '\u00A0' : l}</tspan>`).join('')}</text>`;
@@ -190,10 +189,10 @@ app.get('/:text', (req, res) => {
         const leftX = mainTextX - mainTextWidth / 2;
         const rightX = mainTextX + mainTextWidth / 2;
         techBgSvg = `<g>
-            <line x1="0" y1="60" x2="800" y2="60" stroke="#e5e7eb" stroke-width="1" opacity="0.5" stroke-dasharray="4 2" />
-            <line x1="0" y1="110" x2="800" y2="110" stroke="#e5e7eb" stroke-width="1" opacity="0.5" stroke-dasharray="4 2" />
-            <line x1="${leftX}" y1="40" x2="${leftX}" y2="160" stroke="#e5e7eb" stroke-width="1" opacity="0.5" stroke-dasharray="4 2" />
-            <line x1="${rightX}" y1="40" x2="${rightX}" y2="160" stroke="#e5e7eb" stroke-width="1" opacity="0.5" stroke-dasharray="4 2" />
+            <line x1="0" y1="60" x2="800" y2="60" stroke="#e5e7eb" stroke-width="1" opacity="0.2" stroke-dasharray="4 2" />
+            <line x1="0" y1="110" x2="800" y2="110" stroke="#e5e7eb" stroke-width="1" opacity="0.2" stroke-dasharray="4 2" />
+            <line x1="${leftX}" y1="40" x2="${leftX}" y2="160" stroke="#e5e7eb" stroke-width="1" opacity="0.2" stroke-dasharray="4 2" />
+            <line x1="${rightX}" y1="40" x2="${rightX}" y2="160" stroke="#e5e7eb" stroke-width="1" opacity="0.2" stroke-dasharray="4 2" />
         </g>`;
     }
     if (bgData.type === 'gradient') {
@@ -206,10 +205,15 @@ app.get('/:text', (req, res) => {
     let taglineSvg = '';
     if (taglineText) {
         const tagWidth = Math.max(60, taglineText.length * 13);
+        let tagAnchor = tagData.anchor;
+        let tagTextX = 0;
+        if (tagAnchor === 'start') tagTextX = 0;
+        else if (tagAnchor === 'end') tagTextX = tagWidth;
+        else tagTextX = tagWidth / 2;
         taglineSvg = `
-        <g transform="translate(${tagData.x - tagWidth / 2},0)">
+        <g transform="translate(${tagData.x},0)">
             <rect x="0" y="116" width="${tagWidth}" height="26" rx="${tagData.radius}" ry="${tagData.radius}" fill="${tagData.bg}" />
-            <text x="${tagWidth / 2}" y="130" dominant-baseline="middle" text-anchor="middle" class="banner-tagline" style="fill:${tagData.color};font-size:17px;font-family:${FONT_FAMILY};font-weight:300;letter-spacing:1px;">
+            <text x="${tagTextX}" y="130" dominant-baseline="middle" text-anchor="${tagAnchor}" class="banner-tagline" style="fill:${tagData.color};font-size:17px;font-family:${FONT_FAMILY};font-weight:300;letter-spacing:1px;">
                 ${taglineText}
             </text>
         </g>
