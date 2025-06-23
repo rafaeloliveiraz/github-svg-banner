@@ -7,7 +7,7 @@ Gere banners SVG dinâmicos, modernos e personalizáveis para seu perfil ou proj
 Monte a URL no formato:
 
 ```
-https://github-svg-banner.vercel.app/NOME_TAGLINE?bg=gradient-HEX1-HEX2|solid-HEX&color=HEX&anim=efeito-HEX&radius=NUMERO&tag=alinhamento-HEX-HEX&techbg=1
+https://github-svg-banner.vercel.app/NOME_TAGLINE?bg=gradient-HEX1-HEX2|solid-HEX&color=HEX&anim=efeito-HEX&radius=NUMERO&tag=alinhamento-HEX-HEX
 ```
 
 ### Parâmetros
@@ -17,7 +17,7 @@ https://github-svg-banner.vercel.app/NOME_TAGLINE?bg=gradient-HEX1-HEX2|solid-HE
 | `NOME_TAGLINE` | Sim | Nome e tagline separados por `_`. Use `-` para espaços. | `Joao-Oliveira_FullStack` |
 | `bg`      | Não | Fundo do banner. `gradient-HEX1-HEX2` (gradiente vertical) ou `solid-HEX` (cor sólida). | `bg=gradient-24292e-58a6ff`<br>`bg=solid-000` |
 | `color`   | Não | Cor do texto principal (HEX, sem #). Padrão: `24292e` | `color=fff` |
-| `anim`    | Não | Efeito de animação:<br>- `fade` (letra a letra, suave)<br>- `neon-HEX` (neon moderno, cor customizável)<br>- `borders-HEX` (borda animada, cor customizável)<br>- `typing` (efeito typing com cursor) | `anim=neon-00ffea`<br>`anim=typing` |
+| `anim`    | Não | Efeito de animação:<br>- `neon-HEX` (neon moderno, cor customizável)<br>- `typing` (efeito typing com cursor) | `anim=neon-00ffea`<br>`anim=typing` |
 | `radius`  | Não | Raio da borda (arredondamento). Padrão: `20`. Use `0` para quadrado. | `radius=0` |
 | `tag`     | Não | Tagline (linha de baixo):<br>`alinhamento-corTexto-corBG-radius`<br>Alinhamento: `left`, `middle`, `right`<br>Cores em HEX<br>Radius do retângulo da tag (opcional, padrão 2) | `tag=left-fff-24292e-2` |
 | `techbg`  | Não | Ativa linhas e detalhes tech no fundo (`1` para ativar) | `techbg=1` |
@@ -26,7 +26,7 @@ https://github-svg-banner.vercel.app/NOME_TAGLINE?bg=gradient-HEX1-HEX2|solid-HE
 
 - `bg`: gradiente vertical de `#2a1a5e` para `#58a6ff`
 - `color`: `#24292e`
-- `anim`: `fade`
+- `anim`: `typing`
 - `radius`: `20`
 - `tag`: centralizado, texto branco, fundo preto, radius 2
 - `techbg`: desativado
@@ -43,9 +43,7 @@ https://github-svg-banner.vercel.app/Joao-Oliveira_FullStack?bg=gradient-24292e-
 
 | Efeito      | Descrição |
 |-------------|-----------|
-| fade        | Fade suave letra a letra, looping infinito. |
 | neon-HEX    | Neon moderno, cor fixa customizável, brilho animado. |
-| borders-HEX | Borda animada ao redor do texto, cor customizável. |
 | typing      | Efeito typing com cursor, mais lento e natural. |
 
 ## Estrutura do texto

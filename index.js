@@ -12,33 +12,6 @@ const animations = {
             letter-spacing: 2px;
         }
     `,
-    borders: () => `
-        .banner-text-main {
-            font-weight: 900;
-            fill: url(#border-gradient);
-            filter: drop-shadow(0 0 8px #fb0094) drop-shadow(0 0 12px #00ff00);
-        }
-    `,
-    fade: () => `
-        .banner-text-main tspan {
-            opacity: 0;
-            animation: fade-in 4.5s infinite;
-        }
-        .banner-text-main tspan:nth-child(1) { animation-delay: 0s; }
-        .banner-text-main tspan:nth-child(2) { animation-delay: 0.3s; }
-        .banner-text-main tspan:nth-child(3) { animation-delay: 0.6s; }
-        .banner-text-main tspan:nth-child(4) { animation-delay: 0.9s; }
-        .banner-text-main tspan:nth-child(5) { animation-delay: 1.2s; }
-        .banner-text-main tspan:nth-child(6) { animation-delay: 1.5s; }
-        .banner-text-main tspan:nth-child(7) { animation-delay: 1.8s; }
-        .banner-text-main tspan:nth-child(8) { animation-delay: 2.1s; }
-        .banner-text-main tspan:nth-child(9) { animation-delay: 2.4s; }
-        .banner-text-main tspan:nth-child(10) { animation-delay: 2.7s; }
-        @keyframes fade-in {
-            0%, 95%, 100% { opacity: 0; }
-            10%, 80% { opacity: 1; }
-        }
-    `,
     typing: () => `
         .banner-text-main {
             font-family: ${FONT_FAMILY};
@@ -125,7 +98,7 @@ app.get('/:text', (req, res) => {
         animCss = animations.neon(neonColor);
         extraDefs = `<linearGradient id="neon-gradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="10%" stop-color="#fff"/><stop offset="100%" stop-color="${neonColor}"/></linearGradient>`;
         mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${mainText}</text>`;
-    } else if (anim === 'typing') {
+    } else {
         animCss = animations.typing();
         // Typing: cursor acompanha a escrita
         const typingSpans = [...mainText].map((l, i) => `<tspan class="typing-span" style="animation-delay:${i * 0.12}s">${l === ' ' ? '\u00A0' : l}</tspan>`).join('');
@@ -145,36 +118,6 @@ app.get('/:text', (req, res) => {
             to { opacity: 1; }
         }
         `;
-    } else if (anim === 'borders') {
-        animCss = animations.borders();
-        extraDefs = `<linearGradient id="border-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#fb0094">
-                <animate attributeName="stop-color" values="#fb0094;#0000ff;#00ff00;#ffff00;#ff0000;#fb0094" dur="8s" repeatCount="indefinite" />
-            </stop>
-            <stop offset="20%" stop-color="#0000ff">
-                <animate attributeName="stop-color" values="#0000ff;#00ff00;#ffff00;#ff0000;#fb0094;#0000ff" dur="8s" repeatCount="indefinite" />
-            </stop>
-            <stop offset="40%" stop-color="#00ff00">
-                <animate attributeName="stop-color" values="#00ff00;#ffff00;#ff0000;#fb0094;#0000ff;#00ff00" dur="8s" repeatCount="indefinite" />
-            </stop>
-            <stop offset="60%" stop-color="#ffff00">
-                <animate attributeName="stop-color" values="#ffff00;#ff0000;#fb0094;#0000ff;#00ff00;#ffff00" dur="8s" repeatCount="indefinite" />
-            </stop>
-            <stop offset="80%" stop-color="#ff0000">
-                <animate attributeName="stop-color" values="#ff0000;#fb0094;#0000ff;#00ff00;#ffff00;#ff0000" dur="8s" repeatCount="indefinite" />
-            </stop>
-            <stop offset="100%" stop-color="#fb0094">
-                <animate attributeName="stop-color" values="#fb0094;#0000ff;#00ff00;#ffff00;#ff0000;#fb0094" dur="8s" repeatCount="indefinite" />
-            </stop>
-        </linearGradient>`;
-        mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${mainText}</text>`;
-    } else if (anim === 'grainy') {
-        animCss = animations.grainy();
-        extraDefs = `<filter id="grainy-filter"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" result="turb"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.25"/></feComponentTransfer><feComposite operator="in" in2="SourceGraphic"/><feBlend in2="SourceGraphic" mode="multiply"/></filter>`;
-        mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${mainText}</text>`;
-    } else {
-        animCss = animations.fade();
-        mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${[...mainText].map((l, i) => `<tspan>${l === ' ' ? '\u00A0' : l}</tspan>`).join('')}</text>`;
     }
 
     // Gradiente ou sólido (de cima para baixo) + linhas tech + grainy
