@@ -36,7 +36,7 @@ https://github-svg-banner.vercel.app/NOME_TAGLINE?bg=gradient-HEX1-HEX2|solid-HE
 ![Exemplo](https://github-svg-banner.vercel.app/Joao-Oliveira_FullStacsks_Development?techbg=1&bg=solid-093332&color=fff&tag=center-093332-b4e67e&radius=5)
 
 ```
-https://github-svg-banner.vercel.app/Joao-Oliveira_FullStack?bg=gradient-24292e-58a6ff&color=fff&anim=neon-58a6ff&tag=left-fff-24292e-2&radius=20&techbg=1
+https://github-svg-banner.vercel.app/Joao-Oliveira_FullStacsks_Development?techbg=1&bg=solid-093332&color=fff&tag=center-093332-b4e67e&radius=5
 ```
 
 ## Visual dos efeitos
