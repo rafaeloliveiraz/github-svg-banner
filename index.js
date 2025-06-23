@@ -242,3 +242,5 @@ app.get('/:text', (req, res) => {
     res.setHeader('Content-Type', 'image/svg+xml');
     res.send(svg);
 });
+
+module.exports = app;
