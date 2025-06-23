@@ -116,6 +116,9 @@ app.get('/:text', (req, res) => {
     const mainTextWidth = getTextWidth(mainText, 54, 900);
     const mainTextX = 400;
 
+    // Corrige: sempre calcula tagData com os argumentos necessários
+    const tagData = parseTag(tag, mainTextX, mainTextWidth);
+
     // Animação customizada
     let animCss = '';
     let mainTextSvg = '';
