@@ -33,10 +33,10 @@ https://github-svg-banner.vercel.app/NOME_TAGLINE?bg=gradient-HEX1-HEX2|solid-HE
 
 ## Exemplo incorporado
 
-![Exemplo](https://github-svg-banner.vercel.app/Joao-Oliveira_FullStacsks_Development?techbg=1&bg=solid-093332&color=fff&tag=center-093332-b4e67e&radius=5)
+![Exemplo](https://github-svg-banner.vercel.app/Joao-Oliveira_FullStack_Development?techbg=1&bg=solid-093332&color=fff&tag=center-093332-b4e67e&radius=5)
 
 ```
-https://github-svg-banner.vercel.app/Joao-Oliveira_FullStacsks_Development?techbg=1&bg=solid-093332&color=fff&tag=center-093332-b4e67e&radius=5
+https://github-svg-banner.vercel.app/Joao-Oliveira_FullStack_Development?techbg=1&bg=solid-093332&color=fff&tag=center-093332-b4e67e&radius=5
 ```
 
 ## Visual dos efeitos
