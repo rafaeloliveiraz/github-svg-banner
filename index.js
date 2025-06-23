@@ -22,20 +22,20 @@ const animations = {
     fade: () => `
         .banner-text-main tspan {
             opacity: 0;
-            animation: fade-in 3.5s infinite;
+            animation: fade-in 4.5s infinite;
         }
         .banner-text-main tspan:nth-child(1) { animation-delay: 0s; }
-        .banner-text-main tspan:nth-child(2) { animation-delay: 0.25s; }
-        .banner-text-main tspan:nth-child(3) { animation-delay: 0.5s; }
-        .banner-text-main tspan:nth-child(4) { animation-delay: 0.75s; }
-        .banner-text-main tspan:nth-child(5) { animation-delay: 1s; }
-        .banner-text-main tspan:nth-child(6) { animation-delay: 1.25s; }
-        .banner-text-main tspan:nth-child(7) { animation-delay: 1.5s; }
-        .banner-text-main tspan:nth-child(8) { animation-delay: 1.75s; }
-        .banner-text-main tspan:nth-child(9) { animation-delay: 2s; }
-        .banner-text-main tspan:nth-child(10) { animation-delay: 2.25s; }
+        .banner-text-main tspan:nth-child(2) { animation-delay: 0.3s; }
+        .banner-text-main tspan:nth-child(3) { animation-delay: 0.6s; }
+        .banner-text-main tspan:nth-child(4) { animation-delay: 0.9s; }
+        .banner-text-main tspan:nth-child(5) { animation-delay: 1.2s; }
+        .banner-text-main tspan:nth-child(6) { animation-delay: 1.5s; }
+        .banner-text-main tspan:nth-child(7) { animation-delay: 1.8s; }
+        .banner-text-main tspan:nth-child(8) { animation-delay: 2.1s; }
+        .banner-text-main tspan:nth-child(9) { animation-delay: 2.4s; }
+        .banner-text-main tspan:nth-child(10) { animation-delay: 2.7s; }
         @keyframes fade-in {
-            0%, 90%, 100% { opacity: 0; }
+            0%, 95%, 100% { opacity: 0; }
             10%, 80% { opacity: 1; }
         }
     `,
@@ -59,8 +59,27 @@ const animations = {
 };
 
 function parseTag(tag, mainTextX, mainTextWidth) {
-    // Sempre centraliza a tag em relação ao nome
-    return { align: 'middle', color: '#fff', bg: '#000', radius: 2, x: mainTextX, anchor: 'middle' };
+    // Alinha a tag conforme solicitado
+    if (!tag) return { align: 'middle', color: '#fff', bg: '#000', radius: 2, x: mainTextX, anchor: 'middle' };
+    const [align, color, bgColor, radius] = tag.split('-');
+    let x = mainTextX;
+    let anchor = 'middle';
+    if (align === 'left') {
+        x = mainTextX - mainTextWidth / 2;
+        anchor = 'start';
+    }
+    if (align === 'end' || align === 'right') {
+        x = mainTextX + mainTextWidth / 2;
+        anchor = 'end';
+    }
+    return {
+        align: align === 'left' ? 'start' : align === 'right' ? 'end' : 'middle',
+        color: color ? `#${color}` : '#fff',
+        bg: bgColor ? `#${bgColor}` : '#000',
+        radius: radius ? Number(radius) : 2,
+        x,
+        anchor
+    };
 }
 
 function parseBg(bg) {
@@ -161,11 +180,15 @@ app.get('/:text', (req, res) => {
     // Gradiente ou sólido (de cima para baixo) + linhas tech + grainy
     let bgSvg = '';
     let techBgSvg = '';
-    let grainyBg = '';
+    let grainyFilter = '';
+    let grainyRect = '';
+    if (req.query.grainy === '1' || req.query.grainy === 1) {
+        grainyFilter = `<filter id="grainy-bg"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="3" result="turb"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer><feComposite operator="in" in2="SourceGraphic"/><feBlend in2="SourceGraphic" mode="multiply"/></filter>`;
+    }
     if (bgData.type === 'gradient') {
-        bgSvg = `<defs>${extraDefs}<linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:${bgData.colors[0]};stop-opacity:1"/><stop offset="100%" style="stop-color:${bgData.colors[1]};stop-opacity:1"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#grad)" rx="${borderRadius}" ry="${borderRadius}"/>`;
+        bgSvg = `<defs>${extraDefs}${grainyFilter}<linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:${bgData.colors[0]};stop-opacity:1"/><stop offset="100%" style="stop-color:${bgData.colors[1]};stop-opacity:1"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#grad)" rx="${borderRadius}" ry="${borderRadius}"${grainyFilter ? ' filter="url(#grainy-bg)"' : ''}/>`;
     } else {
-        bgSvg = `<defs>${extraDefs}</defs><rect width="100%" height="100%" fill="${bgData.colors[0]}" rx="${borderRadius}" ry="${borderRadius}"/>`;
+        bgSvg = `<defs>${extraDefs}${grainyFilter}</defs><rect width="100%" height="100%" fill="${bgData.colors[0]}" rx="${borderRadius}" ry="${borderRadius}"${grainyFilter ? ' filter="url(#grainy-bg)"' : ''}/>`;
     }
     if (techbg === '1' || techbg === 1) {
         const leftX = mainTextX - mainTextWidth / 2;
@@ -177,18 +200,20 @@ app.get('/:text', (req, res) => {
             <line x1="${rightX}" y1="40" x2="${rightX}" y2="160" stroke="#e5e7eb" stroke-width="1" opacity="0.2" stroke-dasharray="4 2" />
         </g>`;
     }
-    if (req.query.grainy === '1' || req.query.grainy === 1) {
-        grainyBg = `<filter id="grainy-bg"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="3" result="turb"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer><feComposite operator="in" in2="SourceGraphic"/><feBlend in2="SourceGraphic" mode="multiply"/></filter><rect width="800" height="200" filter="url(#grainy-bg)" fill="transparent" />`;
-    }
 
     // Tagline centralizada com grupo para alinhamento perfeito
     let taglineSvg = '';
     if (taglineText) {
         const tagWidth = Math.max(60, taglineText.length * 13);
+        let tagAnchor = tagData.anchor;
+        let tagTextX = 0;
+        if (tagAnchor === 'start') tagTextX = 0;
+        else if (tagAnchor === 'end') tagTextX = tagWidth;
+        else tagTextX = tagWidth / 2;
         taglineSvg = `
-        <g transform="translate(${tagData.x - tagWidth / 2},0)">
-            <rect x="0" y="116" width="${tagWidth}" height="26" rx="${tagData.radius}" ry="${tagData.radius}" fill="${tagData.bg}" />
-            <text x="${tagWidth / 2}" y="130" dominant-baseline="middle" text-anchor="middle" class="banner-tagline" style="fill:${tagData.color};font-size:17px;font-family:${FONT_FAMILY};font-weight:300;letter-spacing:1px;">
+        <g transform="translate(${tagData.x - (tagAnchor === 'start' ? 0 : tagAnchor === 'end' ? tagWidth : tagWidth / 2)},0)">
+            <rect x="0" y="140" width="${tagWidth}" height="26" rx="${tagData.radius}" ry="${tagData.radius}" fill="${tagData.bg}" />
+            <text x="${tagTextX}" y="154" dominant-baseline="middle" text-anchor="${tagAnchor}" class="banner-tagline" style="fill:${tagData.color};font-size:17px;font-family:${FONT_FAMILY};font-weight:300;letter-spacing:1px;">
                 ${taglineText}
             </text>
         </g>
