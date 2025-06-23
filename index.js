@@ -12,19 +12,19 @@ const animations = {
             letter-spacing: 2px;
         }
     `,
-    borders: (color) => `
+    borders: () => `
         .banner-text-main {
-            stroke: ${color};
-            stroke-width: 2.5px;
-            paint-order: stroke fill;
-            filter: drop-shadow(0 0 8px ${color});
-            stroke-dasharray: 12 6;
-            stroke-dashoffset: 0;
-            animation: border-dash 2s linear infinite;
+            font-weight: 900;
+            fill: url(#border-gradient);
+            filter: drop-shadow(0 0 12px #fb0094) drop-shadow(0 0 24px #00ff00);
         }
-        @keyframes border-dash {
-            0% { stroke-dashoffset: 0; }
-            100% { stroke-dashoffset: 36; }
+        @keyframes border-gradient-move {
+            0% { stop-color: #fb0094; }
+            20% { stop-color: #0000ff; }
+            40% { stop-color: #00ff00; }
+            60% { stop-color: #ffff00; }
+            80% { stop-color: #ff0000; }
+            100% { stop-color: #fb0094; }
         }
     `,
     fade: () => `
@@ -80,7 +80,6 @@ function parseBg(bg) {
 }
 
 function parseTag(tag, mainTextX, mainTextWidth) {
-    // tag=left-000-FFF
     if (!tag) return { align: 'middle', color: '#fff', bg: '#000', radius: 2, x: mainTextX };
     const [align, color, bgColor, radius] = tag.split('-');
     let x = mainTextX;
@@ -96,7 +95,6 @@ function parseTag(tag, mainTextX, mainTextWidth) {
 }
 
 function getTextWidth(text, fontSize = 54, fontWeight = 900) {
-    // Aproximação para SVG (Roboto, bold)
     return Math.max(60, text.length * (fontWeight > 500 ? 28 : 13));
 }
 
@@ -115,8 +113,6 @@ app.get('/:text', (req, res) => {
     const textColor = `#${color}`;
     const mainTextWidth = getTextWidth(mainText, 54, 900);
     const mainTextX = 400;
-
-    // Corrige: sempre calcula tagData com os argumentos necessários
     const tagData = parseTag(tag, mainTextX, mainTextWidth);
 
     // Animação customizada
@@ -130,7 +126,6 @@ app.get('/:text', (req, res) => {
         mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${mainText}</text>`;
     } else if (anim === 'typing') {
         animCss = animations.typing();
-        // Simula typing letra a letra, mais lento, pausa ao final
         const typingSpans = [...mainText].map((l, i) => `<tspan class="typing-span" style="animation-delay:${i * 0.25}s">${l === ' ' ? '\u00A0' : l}</tspan>`).join('');
         mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};">${typingSpans}<tspan class="typing-cursor">|</tspan></text>`;
         animCss += `
@@ -159,33 +154,46 @@ app.get('/:text', (req, res) => {
             91%, 100% { opacity: 0; }
         }
         `;
-    } else if (anim.startsWith('borders-')) {
-        const borderColor = `#${anim.split('-')[1] || 'fff'}`;
-        animCss = animations.borders(borderColor);
+    } else if (anim === 'borders') {
+        animCss = animations.borders();
+        extraDefs = `<linearGradient id="border-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#fb0094">
+                <animate attributeName="stop-color" values="#fb0094;#0000ff;#00ff00;#ffff00;#ff0000;#fb0094" dur="8s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="20%" stop-color="#0000ff">
+                <animate attributeName="stop-color" values="#0000ff;#00ff00;#ffff00;#ff0000;#fb0094;#0000ff" dur="8s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="40%" stop-color="#00ff00">
+                <animate attributeName="stop-color" values="#00ff00;#ffff00;#ff0000;#fb0094;#0000ff;#00ff00" dur="8s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="60%" stop-color="#ffff00">
+                <animate attributeName="stop-color" values="#ffff00;#ff0000;#fb0094;#0000ff;#00ff00;#ffff00" dur="8s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="80%" stop-color="#ff0000">
+                <animate attributeName="stop-color" values="#ff0000;#fb0094;#0000ff;#00ff00;#ffff00;#ff0000" dur="8s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="100%" stop-color="#fb0094">
+                <animate attributeName="stop-color" values="#fb0094;#0000ff;#00ff00;#ffff00;#ff0000;#fb0094" dur="8s" repeatCount="indefinite" />
+            </stop>
+        </linearGradient>`;
         mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${mainText}</text>`;
     } else {
         animCss = animations.fade();
         mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${[...mainText].map((l, i) => `<tspan>${l === ' ' ? '\u00A0' : l}</tspan>`).join('')}</text>`;
     }
 
-    // Gradiente ou sólido (de cima para baixo) + techbg
+    // Gradiente ou sólido (de cima para baixo) + linhas tech
     let bgSvg = '';
     let techBgSvg = '';
     if (techbg === '1') {
+        // Linhas horizontais e verticais tech
+        const leftX = mainTextX - mainTextWidth / 2;
+        const rightX = mainTextX + mainTextWidth / 2;
         techBgSvg = `<g>
-            <rect x="0" y="0" width="800" height="200" fill="none" />
-            <g stroke="#5e60ce" stroke-width="1.5" opacity="0.18">
-                <polyline points="0,30 800,60" />
-                <polyline points="0,80 800,110" />
-                <polyline points="0,130 800,160" />
-                <polyline points="0,180 800,200" />
-            </g>
-            <g stroke="#58a6ff" stroke-width="1" opacity="0.10">
-                <polyline points="0,10 800,40" />
-                <polyline points="0,60 800,90" />
-                <polyline points="0,110 800,140" />
-                <polyline points="0,160 800,190" />
-            </g>
+            <line x1="0" y1="60" x2="800" y2="60" stroke="#e5e7eb" stroke-width="2" opacity="0.5" />
+            <line x1="0" y1="110" x2="800" y2="110" stroke="#e5e7eb" stroke-width="2" opacity="0.5" />
+            <line x1="${leftX}" y1="40" x2="${leftX}" y2="160" stroke="#e5e7eb" stroke-width="2" opacity="0.5" />
+            <line x1="${rightX}" y1="40" x2="${rightX}" y2="160" stroke="#e5e7eb" stroke-width="2" opacity="0.5" />
         </g>`;
     }
     if (bgData.type === 'gradient') {
@@ -194,17 +202,14 @@ app.get('/:text', (req, res) => {
         bgSvg = `<defs>${extraDefs}</defs><rect width="100%" height="100%" fill="${bgData.colors[0]}" rx="${borderRadius}" ry="${borderRadius}"/>`;
     }
 
-    // Tagline alinhada ao nome, próxima, com retângulo dinâmico
+    // Tagline centralizada com grupo para alinhamento perfeito
     let taglineSvg = '';
     if (taglineText) {
         const tagWidth = Math.max(60, taglineText.length * 13);
-        let tagX = mainTextX;
-        if (tagData.align === 'start') tagX = mainTextX - mainTextWidth / 2 + tagWidth / 2;
-        if (tagData.align === 'end') tagX = mainTextX + mainTextWidth / 2 - tagWidth / 2;
         taglineSvg = `
-        <g>
-            <rect x="${tagX - tagWidth / 2}" y="116" width="${tagWidth}" height="26" rx="${tagData.radius}" ry="${tagData.radius}" fill="${tagData.bg}" />
-            <text x="${tagX}" y="130" dominant-baseline="middle" text-anchor="${tagData.align}" class="banner-tagline" style="fill:${tagData.color};font-size:17px;font-family:${FONT_FAMILY};font-weight:300;letter-spacing:1px;">
+        <g transform="translate(${tagData.x - tagWidth / 2},0)">
+            <rect x="0" y="116" width="${tagWidth}" height="26" rx="${tagData.radius}" ry="${tagData.radius}" fill="${tagData.bg}" />
+            <text x="${tagWidth / 2}" y="130" dominant-baseline="middle" text-anchor="middle" class="banner-tagline" style="fill:${tagData.color};font-size:17px;font-family:${FONT_FAMILY};font-weight:300;letter-spacing:1px;">
                 ${taglineText}
             </text>
         </g>
@@ -237,5 +242,3 @@ app.get('/:text', (req, res) => {
     res.setHeader('Content-Type', 'image/svg+xml');
     res.send(svg);
 });
-
-module.exports = app;
