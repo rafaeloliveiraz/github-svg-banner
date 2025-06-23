@@ -1,41 +1,68 @@
-# GitHub SVG Banner Generator
+# GitHub SVG Banner
 
-Generate animated SVG banners for your GitHub profile with a simple URL!
+Gere banners SVG dinâmicos e personalizáveis para seu perfil ou projetos no GitHub!
 
-## How to Use
-Access a URL like:
+## Como usar
+
+Monte a URL no formato:
+
 ```
-https://github-svg-banner.vercel.app/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white
-```
-- `nome_funcao`: Your name and role (e.g., `Joao-Oliveira_FullStack`).
-- `bg`: Background model (`wave`, `gradient`).
-- `anim`: Animation (`fade`, `slide`).
-- `color`: Text color (`white`, `blue`, `#ffffff`).
-
-Add to your README:
-```markdown
-![Banner](https://github-svg-banner.vercel.app/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white)
+https://SEU-DEPLOY-OU-LOCALHOST:PORTA/NOME_TAGLINE?bg=gradient-HEX1-HEX2|solid-HEX&color=HEX&anim=efeito-COR&radius=NUMERO&tag=alinhamento-CORTEXTO-CORBG
 ```
 
-## Example Banner
-Here’s an example using the `wave` background, `fade` animation, and `white` text color:
+### Exemplos
 
-![Example Banner](https://github-svg-banner.vercel.app/Joao-Oliveira_FullStack?bg=wave&anim=fade&color=white)
+| Exemplo | URL |
+|---------|-----|
+| Gradiente azul para preto, texto branco, neon azul, tagline à esquerda | `/Joao-Oliveira_FullStack?bg=gradient-58a6ff-24292e&color=fff&anim=neon-58a6ff&tag=left-fff-24292e` |
+| Fundo sólido preto, texto amarelo, borda animada vermelha, tagline centralizada | `/Maria-Silva_DevOps?bg=solid-000&color=ffd700&anim=borders-ff0000&tag=middle-fff-000` |
+| Gradiente customizado, fade letra a letra, tagline à direita | `/Lucas-Designer_UX-UI?bg=gradient-ff7f50-1e90ff&color=fff&anim=fade&tag=right-fff-1e90ff` |
 
-## Variables Explained
-- **`nome_funcao`**: Defines the text displayed on the banner. Format: `Name-Role` (e.g., `Joao-Oliveira_FullStack` becomes "Joao Oliveira - FullStack"). Use `-` to separate words in the name, and `_` to separate name and role.
-- **`bg`**: Selects the background model. Available options: `wave`, `gradient`.
-- **`anim`**: Selects the animation for the text. Available options: `fade`, `slide`.
-- **`color`**: Sets the text color. Use color names (e.g., `white`, `blue`) or hex codes (e.g., `#ffffff`).
+## Parâmetros
 
-## Available Models
-Coming soon... (Table with background models)
+| Parâmetro | Descrição | Exemplo |
+|-----------|-----------|---------|
+| `bg`      | Fundo do banner. Use `gradient-HEX1-HEX2` para gradiente ou `solid-HEX` para cor sólida. | `bg=gradient-fff-000`<br>`bg=solid-24292e` |
+| `color`   | Cor do texto principal (HEX, sem #). | `color=fff` |
+| `anim`    | Efeito de animação:<br>- `fade` (letra a letra, suave)<br>- `neon-HEX` (neon moderno, cor customizável)<br>- `borders-HEX` (bordas animadas, cor customizável) | `anim=neon-00ffea` |
+| `radius`  | Raio da borda (arredondamento). | `radius=10` |
+| `tag`     | Tagline (linha de baixo):<br>`alinhamento-corTexto-corBG`<br>Alinhamento: `left`, `middle`, `right`<br>Cor do texto e do fundo em HEX | `tag=left-fff-000` |
 
-## Available Animations
-Coming soon... (Table with animations)
+## Estrutura do texto
 
-## Contributing
-Feel free to open issues or pull requests for new models, animations, or improvements!
+- O texto antes do `_` é o nome principal (ex: `Joao-Oliveira` → "Joao Oliveira").
+- O texto depois do `_` é a tagline (ex: `FullStack`).
+- Use `-` para espaços.
 
-## License
-MIT License
+## Visual dos efeitos
+
+| Efeito      | Descrição |
+|-------------|-----------|
+| fade        | Fade suave letra a letra, looping infinito. |
+| neon-HEX    | Neon moderno, cor customizável, rotação de cor. |
+| borders-HEX | Bordas animadas ao redor do texto, cor customizável. |
+
+## Exemplo visual
+
+```
+/Joao-Oliveira_FullStack?bg=gradient-58a6ff-24292e&color=fff&anim=neon-58a6ff&tag=left-fff-24292e&radius=20
+```
+
+## Deploy
+
+1. Instale as dependências:
+   ```bash
+   npm install
+   ```
+2. Rode localmente:
+   ```bash
+   node index.js
+   ```
+3. Acesse:
+   ```
+   http://localhost:3000/Joao-Oliveira_FullStack?bg=gradient-58a6ff-24292e&color=fff&anim=neon-58a6ff&tag=left-fff-24292e&radius=20
+   ```
+
+---
+
+Feito com ❤️ para a comunidade!
