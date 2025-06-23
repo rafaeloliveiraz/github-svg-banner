@@ -7,7 +7,7 @@ const animations = {
     neon: (color) => `
         .banner-text-main {
             fill: url(#neon-gradient);
-            filter: drop-shadow(0 0 8px ${color}) drop-shadow(0 0 24px ${color});
+            filter: drop-shadow(0 0 4px ${color}) drop-shadow(0 0 10px ${color});
             font-weight: 900;
             letter-spacing: 2px;
         }
@@ -16,7 +16,7 @@ const animations = {
         .banner-text-main {
             font-weight: 900;
             fill: url(#border-gradient);
-            filter: drop-shadow(0 0 12px #fb0094) drop-shadow(0 0 24px #00ff00);
+            filter: drop-shadow(0 0 8px #fb0094) drop-shadow(0 0 12px #00ff00);
         }
     `,
     fade: () => `
@@ -55,13 +55,13 @@ const animations = {
             0%, 50% { opacity: 1; }
             51%, 100% { opacity: 0; }
         }
-    `,
-    grainy: () => `
-        .banner-text-main {
-            filter: url(#grainy-filter);
-        }
     `
 };
+
+function parseTag(tag, mainTextX, mainTextWidth) {
+    // Sempre centraliza a tag em relação ao nome
+    return { align: 'middle', color: '#fff', bg: '#000', radius: 2, x: mainTextX, anchor: 'middle' };
+}
 
 function parseBg(bg) {
     if (!bg) return { type: 'gradient', colors: ['#2a1a5e', '#58a6ff'] };
@@ -74,29 +74,6 @@ function parseBg(bg) {
         return c1 ? { type: 'solid', colors: [`#${c1}`] } : { type: 'solid', colors: ['#2a1a5e'] };
     }
     return { type: 'gradient', colors: ['#2a1a5e', '#58a6ff'] };
-}
-
-function parseTag(tag, mainTextX, mainTextWidth, alignType = 'middle') {
-    if (!tag) return { align: 'middle', color: '#fff', bg: '#000', radius: 2, x: mainTextX, anchor: 'middle' };
-    const [align, color, bgColor, radius] = tag.split('-');
-    let x = mainTextX;
-    let anchor = 'middle';
-    if (align === 'left') {
-        x = mainTextX - mainTextWidth / 2;
-        anchor = 'start';
-    }
-    if (align === 'end' || align === 'right') {
-        x = mainTextX + mainTextWidth / 2;
-        anchor = 'end';
-    }
-    return {
-        align: align === 'left' ? 'start' : align === 'right' ? 'end' : 'middle',
-        color: color ? `#${color}` : '#fff',
-        bg: bgColor ? `#${bgColor}` : '#000',
-        radius: radius ? Number(radius) : 2,
-        x,
-        anchor
-    };
 }
 
 function getTextWidth(text, fontSize = 54, fontWeight = 900) {
@@ -181,39 +158,37 @@ app.get('/:text', (req, res) => {
         mainTextSvg = `<text x="${mainTextX}" y="96" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};font-size:54px;">${[...mainText].map((l, i) => `<tspan>${l === ' ' ? '\u00A0' : l}</tspan>`).join('')}</text>`;
     }
 
-    // Gradiente ou sólido (de cima para baixo) + linhas tech
+    // Gradiente ou sólido (de cima para baixo) + linhas tech + grainy
     let bgSvg = '';
     let techBgSvg = '';
-    if (techbg === '1') {
-        // Linhas horizontais e verticais tech
-        const leftX = mainTextX - mainTextWidth / 2;
-        const rightX = mainTextX + mainTextWidth / 2;
-        techBgSvg = `<g>
-            <line x1="0" y1="60" x2="800" y2="60" stroke="#e5e7eb" stroke-width="1" opacity="0.2" stroke-dasharray="4 2" />
-            <line x1="0" y1="110" x2="800" y2="110" stroke="#e5e7eb" stroke-width="1" opacity="0.2" stroke-dasharray="4 2" />
-            <line x1="${leftX}" y1="40" x2="${leftX}" y2="160" stroke="#e5e7eb" stroke-width="1" opacity="0.2" stroke-dasharray="4 2" />
-            <line x1="${rightX}" y1="40" x2="${rightX}" y2="160" stroke="#e5e7eb" stroke-width="1" opacity="0.2" stroke-dasharray="4 2" />
-        </g>`;
-    }
+    let grainyBg = '';
     if (bgData.type === 'gradient') {
         bgSvg = `<defs>${extraDefs}<linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:${bgData.colors[0]};stop-opacity:1"/><stop offset="100%" style="stop-color:${bgData.colors[1]};stop-opacity:1"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#grad)" rx="${borderRadius}" ry="${borderRadius}"/>`;
     } else {
         bgSvg = `<defs>${extraDefs}</defs><rect width="100%" height="100%" fill="${bgData.colors[0]}" rx="${borderRadius}" ry="${borderRadius}"/>`;
+    }
+    if (techbg === '1' || techbg === 1) {
+        const leftX = mainTextX - mainTextWidth / 2;
+        const rightX = mainTextX + mainTextWidth / 2;
+        techBgSvg = `<g>
+            <line x1="0" y1="60" x2="800" y2="60" stroke="#e5e7eb" stroke-width="1" opacity="0.2" stroke-dasharray="4 2" />
+            <line x1="0" y1="130" x2="800" y2="130" stroke="#e5e7eb" stroke-width="1" opacity="0.2" stroke-dasharray="4 2" />
+            <line x1="${leftX}" y1="40" x2="${leftX}" y2="160" stroke="#e5e7eb" stroke-width="1" opacity="0.2" stroke-dasharray="4 2" />
+            <line x1="${rightX}" y1="40" x2="${rightX}" y2="160" stroke="#e5e7eb" stroke-width="1" opacity="0.2" stroke-dasharray="4 2" />
+        </g>`;
+    }
+    if (req.query.grainy === '1' || req.query.grainy === 1) {
+        grainyBg = `<filter id="grainy-bg"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="3" result="turb"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer><feComposite operator="in" in2="SourceGraphic"/><feBlend in2="SourceGraphic" mode="multiply"/></filter><rect width="800" height="200" filter="url(#grainy-bg)" fill="transparent" />`;
     }
 
     // Tagline centralizada com grupo para alinhamento perfeito
     let taglineSvg = '';
     if (taglineText) {
         const tagWidth = Math.max(60, taglineText.length * 13);
-        let tagAnchor = tagData.anchor;
-        let tagTextX = 0;
-        if (tagAnchor === 'start') tagTextX = 0;
-        else if (tagAnchor === 'end') tagTextX = tagWidth;
-        else tagTextX = tagWidth / 2;
         taglineSvg = `
-        <g transform="translate(${tagData.x},0)">
+        <g transform="translate(${tagData.x - tagWidth / 2},0)">
             <rect x="0" y="116" width="${tagWidth}" height="26" rx="${tagData.radius}" ry="${tagData.radius}" fill="${tagData.bg}" />
-            <text x="${tagTextX}" y="130" dominant-baseline="middle" text-anchor="${tagAnchor}" class="banner-tagline" style="fill:${tagData.color};font-size:17px;font-family:${FONT_FAMILY};font-weight:300;letter-spacing:1px;">
+            <text x="${tagWidth / 2}" y="130" dominant-baseline="middle" text-anchor="middle" class="banner-tagline" style="fill:${tagData.color};font-size:17px;font-family:${FONT_FAMILY};font-weight:300;letter-spacing:1px;">
                 ${taglineText}
             </text>
         </g>
@@ -223,6 +198,7 @@ app.get('/:text', (req, res) => {
     const svg = `<?xml version="1.0" encoding="UTF-8"?>
     <svg width="800" height="200" xmlns="http://www.w3.org/2000/svg">
         ${bgSvg}
+        ${grainyBg}
         ${techBgSvg}
         <style>
             .banner-text-main {
