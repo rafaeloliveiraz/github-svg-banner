@@ -1,20 +1,35 @@
 const express = require('express');
 const app = express();
 
+const FONT_FAMILY = "'Poppins', 'Montserrat', Arial, sans-serif";
+
 const animations = {
     neon: (color) => `
         .banner-text-main {
-            color: #fff;
             text-shadow:
-                0 0 5px ${color},
-                0 0 10px ${color},
-                0 0 20px ${color},
-                0 0 40px ${color};
-            animation: neon-rotate 6s linear infinite;
+                0 0 8px ${color},
+                0 0 16px ${color},
+                0 0 32px ${color},
+                0 0 48px ${color};
+            position: relative;
         }
-        @keyframes neon-rotate {
-            0% { filter: hue-rotate(0deg); }
-            100% { filter: hue-rotate(360deg); }
+        .banner-text-main::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 80%;
+            height: 60%;
+            border-radius: 50%;
+            box-shadow: 0 0 60px 20px ${color};
+            opacity: 0.5;
+            transform: translate(-50%, -50%) rotate(0deg);
+            animation: neon-glow-move 6s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes neon-glow-move {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
         }
     `,
     borders: (color) => `
@@ -89,13 +104,13 @@ app.get('/', (req, res) => {
 
 app.get('/:text', (req, res) => {
     const { text } = req.params;
-    const { bg, anim = 'fade', color = 'ffffff', gradient, radius = 20, tag } = req.query;
-    const [name, tagline] = text.split('_');
+    const { bg, anim = 'fade', color = '24292e', radius = 20, tag } = req.query;
+    const [name, tagline] = text ? text.split('_') : ['Nome', 'Tagline'];
     const mainText = name ? name.replace(/-/g, ' ') : 'Nome';
     const tagData = parseTag(tag);
     const taglineText = tagline ? tagline.replace(/-/g, ' ') : '';
     const bgData = parseBg(bg);
-    const borderRadius = parseInt(radius, 10) || 20;
+    const borderRadius = (radius !== undefined && radius !== null && radius !== '') ? Number(radius) : 20;
     const textColor = `#${color}`;
 
     // Animação customizada
@@ -110,10 +125,10 @@ app.get('/:text', (req, res) => {
         animCss = animations.fade();
     }
 
-    // Gradiente ou sólido
+    // Gradiente ou sólido (de cima para baixo)
     let bgSvg = '';
     if (bgData.type === 'gradient') {
-        bgSvg = `<defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:${bgData.colors[0]};stop-opacity:1"/><stop offset="100%" style="stop-color:${bgData.colors[1]};stop-opacity:1"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#grad)" rx="${borderRadius}" ry="${borderRadius}"/>`;
+        bgSvg = `<defs><linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:${bgData.colors[0]};stop-opacity:1"/><stop offset="100%" style="stop-color:${bgData.colors[1]};stop-opacity:1"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#grad)" rx="${borderRadius}" ry="${borderRadius}"/>`;
     } else {
         bgSvg = `<rect width="100%" height="100%" fill="${bgData.colors[0]}" rx="${borderRadius}" ry="${borderRadius}"/>`;
     }
@@ -121,17 +136,22 @@ app.get('/:text', (req, res) => {
     // Texto principal com fade letra a letra
     let mainTextSvg = '';
     if (anim === 'fade') {
-        mainTextSvg = `<text x="50%" y="48%" dominant-baseline="middle" text-anchor="middle" class="banner-text-main">${[...mainText].map((l, i) => `<tspan>${l === ' ' ? '\u00A0' : l}</tspan>`).join('')}</text>`;
+        mainTextSvg = `<text x="50%" y="48%" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};">${[...mainText].map((l, i) => `<tspan>${l === ' ' ? '\u00A0' : l}</tspan>`).join('')}</text>`;
     } else {
-        mainTextSvg = `<text x="50%" y="48%" dominant-baseline="middle" text-anchor="middle" class="banner-text-main">${mainText}</text>`;
+        mainTextSvg = `<text x="50%" y="48%" dominant-baseline="middle" text-anchor="middle" class="banner-text-main" style="font-family:${FONT_FAMILY};">${mainText}</text>`;
     }
 
-    // Tagline
+    // Tagline com retângulo sólido atrás
     let taglineSvg = '';
     if (taglineText) {
-        taglineSvg = `<text x="50%" y="70%" dominant-baseline="middle" text-anchor="${tagData.align}" class="banner-tagline" style="fill:${tagData.color};font-size:22px;font-family:Arial,sans-serif;">
-            <tspan style="paint-order:stroke fill;stroke:${tagData.bg};stroke-width:14;stroke-linejoin:round;fill:${tagData.color};">${taglineText}</tspan>
-        </text>`;
+        taglineSvg = `
+        <g>
+            <rect x="50%" y="70%" width="${taglineText.length * 14}" height="32" rx="8" ry="8" fill="${tagData.bg}" transform="translate(-${(taglineText.length * 14) / 2},-16)" />
+            <text x="50%" y="70%" dominant-baseline="middle" text-anchor="${tagData.align}" class="banner-tagline" style="fill:${tagData.color};font-size:22px;font-family:${FONT_FAMILY};font-weight:700;">
+                ${taglineText}
+            </text>
+        </g>
+        `;
     }
 
     const svg = `<?xml version="1.0" encoding="UTF-8"?>
@@ -139,14 +159,15 @@ app.get('/:text', (req, res) => {
         ${bgSvg}
         <style>
             .banner-text-main {
-                font-family: Arial, sans-serif;
+                font-family: ${FONT_FAMILY};
                 font-size: 38px;
+                font-weight: 800;
                 fill: ${textColor};
                 dominant-baseline: middle;
                 text-anchor: middle;
             }
             .banner-tagline {
-                font-weight: bold;
+                font-weight: 700;
             }
             ${animCss}
         </style>

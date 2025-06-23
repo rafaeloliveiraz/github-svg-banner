@@ -1,32 +1,47 @@
 # GitHub SVG Banner
 
-Gere banners SVG dinâmicos e personalizáveis para seu perfil ou projetos no GitHub!
+Gere banners SVG dinâmicos, modernos e personalizáveis para seu perfil ou projetos no GitHub!
 
 ## Como usar
 
 Monte a URL no formato:
 
 ```
-https://SEU-DEPLOY-OU-LOCALHOST:PORTA/NOME_TAGLINE?bg=gradient-HEX1-HEX2|solid-HEX&color=HEX&anim=efeito-COR&radius=NUMERO&tag=alinhamento-CORTEXTO-CORBG
+https://github-svg-banner.vercel.app/NOME_TAGLINE?bg=gradient-HEX1-HEX2|solid-HEX&color=HEX&anim=efeito-HEX&radius=NUMERO&tag=alinhamento-HEX-HEX
 ```
 
-### Exemplos
+### Parâmetros
 
-| Exemplo | URL |
-|---------|-----|
-| Gradiente azul para preto, texto branco, neon azul, tagline à esquerda | `/Joao-Oliveira_FullStack?bg=gradient-58a6ff-24292e&color=fff&anim=neon-58a6ff&tag=left-fff-24292e` |
-| Fundo sólido preto, texto amarelo, borda animada vermelha, tagline centralizada | `/Maria-Silva_DevOps?bg=solid-000&color=ffd700&anim=borders-ff0000&tag=middle-fff-000` |
-| Gradiente customizado, fade letra a letra, tagline à direita | `/Lucas-Designer_UX-UI?bg=gradient-ff7f50-1e90ff&color=fff&anim=fade&tag=right-fff-1e90ff` |
+| Parâmetro | Obrigatório | Descrição | Exemplo |
+|-----------|-------------|-----------|---------|
+| `NOME_TAGLINE` | Sim | Nome e tagline separados por `_`. Use `-` para espaços. | `Joao-Oliveira_FullStack` |
+| `bg`      | Não | Fundo do banner. `gradient-HEX1-HEX2` (gradiente vertical) ou `solid-HEX` (cor sólida). | `bg=gradient-24292e-58a6ff`<br>`bg=solid-000` |
+| `color`   | Não | Cor do texto principal (HEX, sem #). Padrão: `24292e` | `color=fff` |
+| `anim`    | Não | Efeito de animação:<br>- `fade` (letra a letra, suave)<br>- `neon-HEX` (neon moderno, cor customizável)<br>- `borders-HEX` (bordas animadas, cor customizável) | `anim=neon-00ffea` |
+| `radius`  | Não | Raio da borda (arredondamento). Padrão: `20`. Use `0` para quadrado. | `radius=0` |
+| `tag`     | Não | Tagline (linha de baixo):<br>`alinhamento-corTexto-corBG`<br>Alinhamento: `left`, `middle`, `right`<br>Cores em HEX | `tag=left-fff-24292e` |
 
-## Parâmetros
+## Valores padrão
 
-| Parâmetro | Descrição | Exemplo |
-|-----------|-----------|---------|
-| `bg`      | Fundo do banner. Use `gradient-HEX1-HEX2` para gradiente ou `solid-HEX` para cor sólida. | `bg=gradient-fff-000`<br>`bg=solid-24292e` |
-| `color`   | Cor do texto principal (HEX, sem #). | `color=fff` |
-| `anim`    | Efeito de animação:<br>- `fade` (letra a letra, suave)<br>- `neon-HEX` (neon moderno, cor customizável)<br>- `borders-HEX` (bordas animadas, cor customizável) | `anim=neon-00ffea` |
-| `radius`  | Raio da borda (arredondamento). | `radius=10` |
-| `tag`     | Tagline (linha de baixo):<br>`alinhamento-corTexto-corBG`<br>Alinhamento: `left`, `middle`, `right`<br>Cor do texto e do fundo em HEX | `tag=left-fff-000` |
+- `bg`: gradiente vertical de `#2a1a5e` para `#58a6ff`
+- `color`: `#24292e`
+- `anim`: `fade`
+- `radius`: `20`
+- `tag`: centralizado, texto branco, fundo preto
+
+## Exemplo embutido
+
+```
+https://github-svg-banner.vercel.app/Joao-Oliveira_FullStack?bg=gradient-24292e-58a6ff&color=fff&anim=neon-58a6ff&tag=left-fff-24292e&radius=20
+```
+
+## Visual dos efeitos
+
+| Efeito      | Descrição |
+|-------------|-----------|
+| fade        | Fade suave letra a letra, looping infinito. |
+| neon-HEX    | Neon moderno, cor fixa customizável, brilho animado. |
+| borders-HEX | Bordas animadas ao redor do texto, cor customizável. |
 
 ## Estrutura do texto
 
@@ -34,21 +49,7 @@ https://SEU-DEPLOY-OU-LOCALHOST:PORTA/NOME_TAGLINE?bg=gradient-HEX1-HEX2|solid-H
 - O texto depois do `_` é a tagline (ex: `FullStack`).
 - Use `-` para espaços.
 
-## Visual dos efeitos
-
-| Efeito      | Descrição |
-|-------------|-----------|
-| fade        | Fade suave letra a letra, looping infinito. |
-| neon-HEX    | Neon moderno, cor customizável, rotação de cor. |
-| borders-HEX | Bordas animadas ao redor do texto, cor customizável. |
-
-## Exemplo visual
-
-```
-/Joao-Oliveira_FullStack?bg=gradient-58a6ff-24292e&color=fff&anim=neon-58a6ff&tag=left-fff-24292e&radius=20
-```
-
-## Deploy
+## Deploy local
 
 1. Instale as dependências:
    ```bash
@@ -60,7 +61,7 @@ https://SEU-DEPLOY-OU-LOCALHOST:PORTA/NOME_TAGLINE?bg=gradient-HEX1-HEX2|solid-H
    ```
 3. Acesse:
    ```
-   http://localhost:3000/Joao-Oliveira_FullStack?bg=gradient-58a6ff-24292e&color=fff&anim=neon-58a6ff&tag=left-fff-24292e&radius=20
+   http://localhost:3000/Joao-Oliveira_FullStack?bg=gradient-24292e-58a6ff&color=fff&anim=neon-58a6ff&tag=left-fff-24292e&radius=20
    ```
 
 ---
